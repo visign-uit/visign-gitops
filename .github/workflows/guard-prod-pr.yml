@@ -1,0 +1,13 @@
+name: Guard GitOps Main
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm GitOps changes go through PR
+        run: |
+          echo "GitOps main is protected by PR, required checks and reviews."

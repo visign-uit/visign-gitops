@@ -1,0 +1,70 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: appset-services
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - project: visign
+            service: web
+            env: dev
+            namespace: visign-dev
+            chartPath: platform/charts/app-service
+            valuesPath: projects/visign/environments/dev/web.values.yaml
+
+          - project: visign
+            service: ai
+            env: dev
+            namespace: visign-dev
+            chartPath: platform/charts/app-service
+            valuesPath: projects/visign/environments/dev/ai.values.yaml
+
+          - project: visign
+            service: web
+            env: prod
+            namespace: visign-prod
+            chartPath: platform/charts/app-service
+            valuesPath: projects/visign/environments/prod/web.values.yaml
+
+          - project: visign
+            service: ai
+            env: prod
+            namespace: visign-prod
+            chartPath: platform/charts/app-service
+            valuesPath: projects/visign/environments/prod/ai.values.yaml
+
+  template:
+    metadata:
+      name: "{{project}}-{{service}}-{{env}}"
+      labels:
+        project: "{{project}}"
+        service: "{{service}}"
+        env: "{{env}}"
+
+    spec:
+      project: "{{project}}"
+
+      sources:
+        - repoURL: https://github.com/lengynthaovan/visign-gitops
+          targetRevision: main
+          path: "{{chartPath}}"
+          helm:
+            valueFiles:
+              - "$values/{{valuesPath}}"
+
+        - repoURL: https://github.com/lengynthaovan/visign-gitops
+          targetRevision: main
+          ref: values
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{namespace}}"
+
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+        automated:
+          prune: true
+          selfHeal: true

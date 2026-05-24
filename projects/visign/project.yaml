@@ -1,0 +1,11 @@
+project:
+  name: visign
+  owner: uit
+  description: Visign web and AI platform
+  sourceRepo: https://github.com/LyyHua/visign-app
+  gitopsRepo: https://github.com/LyyHua/visign-gitops
+
+domains:
+  base: visign-uit.id.vn
+  dev: dev.visign-uit.id.vn
+  prod: prod.visign-uit.id.vn

@@ -1,0 +1,5 @@
+apiVersion: v2
+name: cluster-addons
+description: Reusable cluster-level addons for AKS
+type: application
+version: 0.1.0

@@ -1,0 +1,40 @@
+name: Validate GitOps
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "platform/**"
+      - "projects/**"
+      - "appsets/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Render app-service chart
+        run: |
+          set -euo pipefail
+
+          helm template visign-web-dev platform/charts/app-service \
+            -f projects/visign/environments/dev/web.values.yaml > /tmp/web-dev.yaml
+
+          helm template visign-ai-dev platform/charts/app-service \
+            -f projects/visign/environments/dev/ai.values.yaml > /tmp/ai-dev.yaml
+
+          helm template visign-web-prod platform/charts/app-service \
+            -f projects/visign/environments/prod/web.values.yaml > /tmp/web-prod.yaml
+
+          helm template visign-ai-prod platform/charts/app-service \
+            -f projects/visign/environments/prod/ai.values.yaml > /tmp/ai-prod.yaml
+
+      - name: Render cluster addons
+        run: |
+          set -euo pipefail
+          helm template cluster-addons platform/charts/cluster-addons > /tmp/cluster-addons.yaml

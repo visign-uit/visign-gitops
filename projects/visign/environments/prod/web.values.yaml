@@ -1,0 +1,77 @@
+project:
+  name: visign
+  environment: prod
+
+service:
+  name: visign-web
+  component: web
+  type: nextjs
+  port: 3000
+  containerPort: 3000
+
+image:
+  repository: visignprodacrvnktt4.azurecr.io/visign-web
+  tag: prod-placeholder
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+env:
+  - name: NODE_ENV
+    value: production
+  - name: NEXT_PUBLIC_API_URL
+    value: /api/predict
+
+probes:
+  enabled: true
+  path: /
+
+ingress:
+  enabled: true
+  className: nginx
+  host: prod.visign-uit.id.vn
+  tlsSecretName: visign-tls-prod
+  clusterIssuer: letsencrypt-http
+  paths:
+    - path: /api/predict
+      pathType: Prefix
+      serviceName: visign-ai
+      servicePort: 8000
+    - path: /api/videos
+      pathType: Prefix
+      serviceName: visign-web
+      servicePort: 3000
+    - path: /
+      pathType: Prefix
+      serviceName: visign-web
+      servicePort: 3000
+
+keyVault:
+  enabled: true
+  providerClassName: visign-kv-secrets
+  keyVaultName: visign-prod-kv-vnktt4
+  tenantId: "<azure-tenant-id>"
+  userAssignedIdentityID: "<prod-user-assigned-identity-id>"
+  objects:
+    - objectName: DATABASE_URL
+      objectType: secret
+    - objectName: NEXTAUTH_SECRET
+      objectType: secret
+    - objectName: NEXTAUTH_URL
+      objectType: secret
+  secretObjects:
+    - objectName: DATABASE_URL
+      key: DATABASE_URL
+    - objectName: NEXTAUTH_SECRET
+      key: NEXTAUTH_SECRET
+    - objectName: NEXTAUTH_URL
+      key: NEXTAUTH_URL
+
+migration:
+  enabled: true
+  image:
+    repository: visignprodacrvnktt4.azurecr.io/visign-web-migrator
+    tag: prod-placeholder
+
+topologySpread:
+  enabled: true

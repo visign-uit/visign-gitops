@@ -1,0 +1,12 @@
+ingress:
+  className: nginx
+
+certManager:
+  enabled: true
+  clusterIssuerName: letsencrypt-http
+  email: levan20092004@gmail.com
+  server: https://acme-v02.api.letsencrypt.org/directory
+  privateKeySecretName: letsencrypt-http-account-key
+
+csiSecretsStore:
+  enabled: true

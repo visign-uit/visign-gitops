@@ -1,0 +1,33 @@
+project:
+  name: visign
+  environment: dev
+
+service:
+  name: visign-ai
+  component: ai
+  type: fastapi
+  port: 8000
+  containerPort: 8000
+
+image:
+  repository: visignnonprodacrzse7xf.azurecr.io/visign-ai
+  tag: dev-placeholder
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+probes:
+  enabled: true
+  path: /health
+
+ingress:
+  enabled: false
+
+keyVault:
+  enabled: false
+
+migration:
+  enabled: false
+
+topologySpread:
+  enabled: false

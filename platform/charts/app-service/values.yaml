@@ -1,0 +1,62 @@
+project:
+  name: ""
+  environment: ""
+
+service:
+  name: ""
+  component: ""
+  type: ""
+  port: 80
+  containerPort: 8080
+
+image:
+  repository: ""
+  tag: ""
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+env: []
+
+resources: {}
+
+probes:
+  enabled: true
+  path: /health
+
+ingress:
+  enabled: false
+  className: nginx
+  host: ""
+  tlsSecretName: ""
+  clusterIssuer: letsencrypt-http
+  paths:
+    - path: /
+      pathType: Prefix
+      serviceName: ""
+      servicePort: 0
+
+keyVault:
+  enabled: false
+  providerClassName: ""
+  keyVaultName: ""
+  tenantId: ""
+  userAssignedIdentityID: ""
+  objects: []
+  secretObjects: []
+
+migration:
+  enabled: false
+  image:
+    repository: ""
+    tag: ""
+
+topologySpread:
+  enabled: false
+  topologyKey: topology.kubernetes.io/zone
+
+hpa:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
