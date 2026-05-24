@@ -18,7 +18,7 @@ spec:
       project: platform
 
       source:
-        repoURL: https://github.com/LyyHua/visign-gitops
+        repoURL: https://github.com/visign-uit/visign-gitops
         targetRevision: main
         path: "{{chartPath}}"
         helm:

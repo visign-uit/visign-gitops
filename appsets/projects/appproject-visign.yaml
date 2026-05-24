@@ -7,7 +7,7 @@ spec:
   description: Visign application project
 
   sourceRepos:
-    - https://github.com/lengynthaovan/visign-gitops
+    - https://github.com/visign-uit/visign-gitops
 
   destinations:
     - namespace: visign-dev

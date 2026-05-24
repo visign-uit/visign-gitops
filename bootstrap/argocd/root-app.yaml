@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/lengynthaovan/visign-gitops
+    repoURL: https://github.com/visign-uit/visign-gitops
     targetRevision: main
     path: appsets
 

@@ -47,14 +47,14 @@ spec:
       project: "{{project}}"
 
       sources:
-        - repoURL: https://github.com/lengynthaovan/visign-gitops
+        - repoURL: https://github.com/visign-uit/visign-gitops
           targetRevision: main
           path: "{{chartPath}}"
           helm:
             valueFiles:
               - "$values/{{valuesPath}}"
 
-        - repoURL: https://github.com/lengynthaovan/visign-gitops
+        - repoURL: https://github.com/visign-uit/visign-gitops
           targetRevision: main
           ref: values
 
