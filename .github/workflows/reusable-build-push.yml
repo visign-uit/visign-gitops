@@ -12,6 +12,10 @@ on:
       dockerfile_path:
         required: true
         type: string
+      torch_compute:
+        required: false
+        type: string
+        default: ""
       migration_enabled:
         required: false
         type: boolean
@@ -33,20 +37,12 @@ on:
       image_tag:
         description: Built image tag
         value: ${{ jobs.build.outputs.image_tag }}
-      image_repository:
-        description: Main image repository
-        value: ${{ jobs.build.outputs.image_repository }}
-      migration_image_repository:
-        description: Migration image repository
-        value: ${{ jobs.build.outputs.migration_image_repository }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.meta.outputs.image_tag }}
-      image_repository: ${{ steps.meta.outputs.image_repository }}
-      migration_image_repository: ${{ steps.meta.outputs.migration_image_repository }}
 
     steps:
       - uses: actions/checkout@v4
@@ -75,26 +71,13 @@ jobs:
               ;;
           esac
 
-      - name: Prepare image metadata
+      - name: Prepare metadata
         id: meta
         run: |
           set -euo pipefail
-
           SHORT_SHA="${GITHUB_SHA::7}"
           ENVIRONMENT="${{ steps.acr.outputs.environment }}"
-          ACR="${{ steps.acr.outputs.acr_login_server }}"
-
-          IMAGE_TAG="${ENVIRONMENT}-${SHORT_SHA}"
-          IMAGE_REPOSITORY="${ACR}/${{ inputs.image_name }}"
-
-          echo "image_tag=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
-          echo "image_repository=${IMAGE_REPOSITORY}" >> "$GITHUB_OUTPUT"
-
-          if [ "${{ inputs.migration_enabled }}" = "true" ]; then
-            echo "migration_image_repository=${ACR}/${{ inputs.migration_image_name }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "migration_image_repository=" >> "$GITHUB_OUTPUT"
-          fi
+          echo "image_tag=${ENVIRONMENT}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Login to ACR
         run: |
@@ -106,12 +89,32 @@ jobs:
         run: |
           set -euo pipefail
 
+          BUILD_ARGS=""
+
+          if [ "${{ inputs.image_name }}" = "visign-web" ]; then
+            CLERK_KEY="${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}"
+
+            if [ -z "$CLERK_KEY" ]; then
+              echo "Missing NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
+              exit 1
+            fi
+
+            BUILD_ARGS="$BUILD_ARGS --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$CLERK_KEY"
+          fi
+
+          if [ -n "${{ inputs.torch_compute }}" ]; then
+            BUILD_ARGS="$BUILD_ARGS --build-arg TORCH_COMPUTE=${{ inputs.torch_compute }}"
+          fi
+
+          IMAGE="${{ steps.acr.outputs.acr_login_server }}/${{ inputs.image_name }}:${{ steps.meta.outputs.image_tag }}"
+
           docker build \
+            $BUILD_ARGS \
             -f "${{ inputs.dockerfile_path }}" \
-            -t "${{ steps.meta.outputs.image_repository }}:${{ steps.meta.outputs.image_tag }}" \
+            -t "$IMAGE" \
             "${{ inputs.context_path }}"
 
-          docker push "${{ steps.meta.outputs.image_repository }}:${{ steps.meta.outputs.image_tag }}"
+          docker push "$IMAGE"
 
       - name: Build and push migration image
         if: inputs.migration_enabled
@@ -123,10 +126,12 @@ jobs:
             TARGET_ARG="--target ${{ inputs.migration_build_target }}"
           fi
 
+          IMAGE="${{ steps.acr.outputs.acr_login_server }}/${{ inputs.migration_image_name }}:${{ steps.meta.outputs.image_tag }}"
+
           docker build \
             ${TARGET_ARG} \
             -f "${{ inputs.migration_dockerfile_path }}" \
-            -t "${{ steps.meta.outputs.migration_image_repository }}:${{ steps.meta.outputs.image_tag }}" \
+            -t "$IMAGE" \
             "${{ inputs.context_path }}"
 
-          docker push "${{ steps.meta.outputs.migration_image_repository }}:${{ steps.meta.outputs.image_tag }}"
+          docker push "$IMAGE"

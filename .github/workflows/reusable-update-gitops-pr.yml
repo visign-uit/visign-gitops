@@ -6,23 +6,13 @@ on:
       service:
         required: true
         type: string
-      image_name:
-        required: true
-        type: string
       image_tag:
-        required: true
-        type: string
-      image_repository:
         required: true
         type: string
       migration_enabled:
         required: false
         type: boolean
         default: false
-      migration_image_repository:
-        required: false
-        type: string
-        default: ""
       values_dev:
         required: true
         type: string
@@ -72,23 +62,19 @@ jobs:
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
 
-      - name: Update image tag in values
+      - name: Update image tag
         run: |
           set -euo pipefail
 
           cd visign-gitops
 
           VALUES_FILE="${{ steps.target.outputs.values_file }}"
-          IMAGE_REPOSITORY="${{ inputs.image_repository }}"
           IMAGE_TAG="${{ inputs.image_tag }}"
           MIGRATION_ENABLED="${{ inputs.migration_enabled }}"
-          MIGRATION_IMAGE_REPOSITORY="${{ inputs.migration_image_repository }}"
 
-          yq e -i '.image.repository = strenv(IMAGE_REPOSITORY)' "$VALUES_FILE"
           yq e -i '.image.tag = strenv(IMAGE_TAG)' "$VALUES_FILE"
 
           if [ "$MIGRATION_ENABLED" = "true" ]; then
-            yq e -i '.migration.image.repository = strenv(MIGRATION_IMAGE_REPOSITORY)' "$VALUES_FILE"
             yq e -i '.migration.image.tag = strenv(IMAGE_TAG)' "$VALUES_FILE"
           fi
 

@@ -50,8 +50,8 @@ keyVault:
   enabled: true
   providerClassName: visign-kv-secrets
   keyVaultName: visign-nonprod-kv-zse7xf
-  tenantId: "<azure-tenant-id>"
-  userAssignedIdentityID: "<dev-user-assigned-identity-id>"
+  tenantId: "<tenant-id-thật>"
+  userAssignedIdentityID: "<managed-identity-client-id-dev>"
   objects:
     - objectName: DATABASE_URL
       objectType: secret
@@ -72,6 +72,8 @@ migration:
   image:
     repository: visignnonprodacrzse7xf.azurecr.io/visign-web-migrator
     tag: dev-placeholder
+  command: ["npm"]
+  args: ["run", "db:migrate"]
 
 topologySpread:
   enabled: false

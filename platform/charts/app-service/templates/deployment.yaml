@@ -50,6 +50,12 @@ spec:
             {{- end }}
           {{- end }}
 
+          {{- if .Values.keyVault.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.service.name }}-secrets
+          {{- end }}
+
           {{- if .Values.resources }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

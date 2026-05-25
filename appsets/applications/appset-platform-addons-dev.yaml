@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: appset-platform-addons-dev
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: cluster-addons-dev
+            env: dev
+            clusterName: aks-visign-dev
+            namespace: cert-manager
+            chartPath: platform/charts/cluster-addons
+
+  template:
+    metadata:
+      name: "{{name}}"
+      labels:
+        env: "{{env}}"
+
+    spec:
+      project: platform
+
+      source:
+        repoURL: https://github.com/visign-uit/visign-gitops
+        targetRevision: main
+        path: "{{chartPath}}"
+        helm:
+          releaseName: "{{name}}"
+
+      destination:
+        name: "{{clusterName}}"
+        namespace: "{{namespace}}"
+
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+        automated:
+          prune: true
+          selfHeal: true

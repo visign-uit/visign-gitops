@@ -7,8 +7,12 @@ metadata:
     app.kubernetes.io/name: {{ .Values.service.name }}
     app.kubernetes.io/part-of: {{ .Values.project.name }}
     app.kubernetes.io/component: migration
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
 spec:
   ttlSecondsAfterFinished: 300
+  backoffLimit: 2
   template:
     spec:
       restartPolicy: Never
@@ -16,4 +20,34 @@ spec:
         - name: migration
           image: "{{ .Values.migration.image.repository }}:{{ .Values.migration.image.tag }}"
           imagePullPolicy: IfNotPresent
+
+          {{- if .Values.migration.command }}
+          command:
+            {{- toYaml .Values.migration.command | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.migration.args }}
+          args:
+            {{- toYaml .Values.migration.args | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.keyVault.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.service.name }}-secrets
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets-store
+              readOnly: true
+          {{- end }}
+
+      {{- if .Values.keyVault.enabled }}
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.keyVault.providerClassName }}
+      {{- end }}
 {{- end }}

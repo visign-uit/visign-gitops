@@ -10,14 +10,14 @@ spec:
     - https://github.com/visign-uit/visign-gitops
 
   destinations:
-    - namespace: visign-dev
-      server: https://kubernetes.default.svc
-    - namespace: visign-prod
-      server: https://kubernetes.default.svc
+    - name: aks-visign-dev
+      namespace: visign
+    - name: aks-visign-prod
+      namespace: visign
 
   clusterResourceWhitelist:
-    - group: "*"
-      kind: "*"
+    - group: ""
+      kind: Namespace
 
   namespaceResourceWhitelist:
     - group: "*"

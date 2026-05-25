@@ -10,6 +10,8 @@ spec:
     repoURL: https://github.com/visign-uit/visign-gitops
     targetRevision: main
     path: appsets
+    directory:
+      recurse: true
 
   destination:
     server: https://kubernetes.default.svc

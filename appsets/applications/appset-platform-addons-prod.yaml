@@ -1,19 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: appset-platform-addons
+  name: appset-platform-addons-prod
   namespace: argocd
 spec:
   generators:
     - list:
         elements:
-          - name: cluster-addons
+          - name: cluster-addons-prod
+            env: prod
+            clusterName: aks-visign-prod
             namespace: cert-manager
             chartPath: platform/charts/cluster-addons
 
   template:
     metadata:
       name: "{{name}}"
+      labels:
+        env: "{{env}}"
+
     spec:
       project: platform
 
@@ -25,12 +30,9 @@ spec:
           releaseName: "{{name}}"
 
       destination:
-        server: https://kubernetes.default.svc
+        name: "{{clusterName}}"
         namespace: "{{namespace}}"
 
       syncPolicy:
         syncOptions:
           - CreateNamespace=true
-        automated:
-          prune: true
-          selfHeal: true

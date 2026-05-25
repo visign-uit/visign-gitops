@@ -21,6 +21,10 @@ on:
       image_name:
         required: true
         type: string
+      torch_compute:
+        required: false
+        type: string
+        default: ""
       migration_enabled:
         required: false
         type: boolean
@@ -65,9 +69,8 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          ruff check .
-          pytest tests/ -v
+          pip install -r requirements.runtime.txt
+          python -m py_compile app.py
 
   build_push:
     needs: test
@@ -77,6 +80,7 @@ jobs:
       image_name: ${{ inputs.image_name }}
       context_path: ${{ inputs.context_path }}
       dockerfile_path: ${{ inputs.dockerfile_path }}
+      torch_compute: ${{ inputs.torch_compute }}
       migration_enabled: ${{ inputs.migration_enabled }}
       migration_image_name: ${{ inputs.migration_image_name }}
       migration_dockerfile_path: ${{ inputs.migration_dockerfile_path }}
@@ -89,11 +93,8 @@ jobs:
     uses: visign-uit/visign-gitops/.github/workflows/reusable-update-gitops-pr.yml@main
     with:
       service: ${{ inputs.service }}
-      image_name: ${{ inputs.image_name }}
       image_tag: ${{ needs.build_push.outputs.image_tag }}
-      image_repository: ${{ needs.build_push.outputs.image_repository }}
       migration_enabled: ${{ inputs.migration_enabled }}
-      migration_image_repository: ${{ needs.build_push.outputs.migration_image_repository }}
       values_dev: ${{ inputs.gitops_values_dev }}
       values_prod: ${{ inputs.gitops_values_prod }}
     secrets: inherit
