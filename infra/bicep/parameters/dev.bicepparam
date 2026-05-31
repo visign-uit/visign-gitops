@@ -12,8 +12,8 @@
 //     --parameters postgresAdminPassword='NonProdPassword123!'
 using '../main.bicep'
 
-param clusterType = 'nonprod'
-param location = 'southeastasia'
+param clusterType = 'dev'
+param location = 'eastasia'
 param projectName = 'visign'
 
 // Smaller VM — dev/test/staging không cần nhiều tài nguyên

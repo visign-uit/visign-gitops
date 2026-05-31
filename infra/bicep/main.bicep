@@ -30,12 +30,12 @@ targetScope = 'subscription'
 
 // ── Parameters ──────────────────────────────────────────────
 
-@description('Target cluster: nonprod | prod')
-@allowed(['nonprod', 'prod'])
+@description('Target cluster: dev | prod')
+@allowed(['dev', 'prod'])
 param clusterType string
 
 @description('Azure region')
-param location string = 'southeastasia'
+param location string = 'eastasia' // default to East Asia, can be overridden in parameters file
 
 @description('Project name used as naming prefix')
 param projectName string = 'visign'
@@ -119,7 +119,7 @@ module aks './modules/aks.bicep' = {
   scope: rg
   params: {
     location: location
-    aksName: '${projectName}${suffix}-aks'
+    aksName: 'aks-${projectName}-${clusterType}'
     nodeVMSize: aksNodeVMSize
     nodeCount: aksNodeCount
     autoScaleMin: aksAutoScaleMin
@@ -180,4 +180,4 @@ output cicdClientId string = cicdIdentity.outputs.clientId
 output natPublicIP string = network.outputs.natPublicIP
 
 // Hint: namespaces to create inside non-prod cluster
-output clusterUsage string = isProd ? 'namespace: prod' : 'namespaces: dev | test | staging'
+output clusterUsage string = 'namespace: visign'

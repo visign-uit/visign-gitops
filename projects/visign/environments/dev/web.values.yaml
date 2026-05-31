@@ -10,7 +10,7 @@ service:
   containerPort: 3000
 
 image:
-  repository: visignnonprodacrzse7xf.azurecr.io/visign-web
+  repository: visigndevacrbhx5po.azurecr.io/visign-web
   tag: dev-placeholder
   pullPolicy: IfNotPresent
 
@@ -50,27 +50,27 @@ keyVault:
   enabled: true
   providerClassName: visign-kv-secrets
   keyVaultName: visign-nonprod-kv-zse7xf
-  tenantId: "<tenant-id-thật>"
-  userAssignedIdentityID: "<managed-identity-client-id-dev>"
+  tenantId: "c7aee1e3-c9fb-4247-865d-ca9c9dde9ad3"
+  userAssignedIdentityID: "52445c31-7eb9-41b8-b7c8-b35fab2343fc"
   objects:
-    - objectName: DATABASE_URL
+    - objectName: DATABASE-URL
       objectType: secret
-    - objectName: NEXTAUTH_SECRET
+    - objectName: CLERK-SECRET-KEY
       objectType: secret
-    - objectName: NEXTAUTH_URL
+    - objectName: CLERK-PUBLISHABLE-KEY
       objectType: secret
   secretObjects:
-    - objectName: DATABASE_URL
+    - objectName: DATABASE-URL
       key: DATABASE_URL
-    - objectName: NEXTAUTH_SECRET
-      key: NEXTAUTH_SECRET
-    - objectName: NEXTAUTH_URL
-      key: NEXTAUTH_URL
+    - objectName: CLERK-SECRET-KEY
+      key: CLERK_SECRET_KEY
+    - objectName: CLERK-PUBLISHABLE-KEY
+      key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 migration:
   enabled: true
   image:
-    repository: visignnonprodacrzse7xf.azurecr.io/visign-web-migrator
+    repository: visigndevacrbhx5po.azurecr.io/visign-web-migrator
     tag: dev-placeholder
   command: ["npm"]
   args: ["run", "db:migrate"]

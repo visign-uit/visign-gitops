@@ -10,7 +10,7 @@ service:
   containerPort: 8000
 
 image:
-  repository: visignnonprodacrzse7xf.azurecr.io/visign-ai
+  repository: visigndevacrbhx5po.azurecr.io/visign-ai
   tag: dev-placeholder
   pullPolicy: IfNotPresent
 

@@ -1,6 +1,6 @@
 // PROD CLUSTER
 // 1 AKS cluster riêng biệt cho production
-//   namespace: prod
+//   namespace: visign
 //
 // Deploy:
 //   az deployment sub create \
@@ -11,7 +11,7 @@
 using '../main.bicep'
 
 param clusterType = 'prod'
-param location = 'southeastasia'
+param location = 'eastasia'
 param projectName = 'visign'
 
 // Larger VM + more nodes for production workloads

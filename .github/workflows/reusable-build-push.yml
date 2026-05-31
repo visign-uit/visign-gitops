@@ -38,9 +38,15 @@ on:
         description: Built image tag
         value: ${{ jobs.build.outputs.image_tag }}
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: 1
     outputs:
       image_tag: ${{ steps.meta.outputs.image_tag }}
 
@@ -56,20 +62,29 @@ jobs:
             dev)
               echo "environment=dev" >> "$GITHUB_OUTPUT"
               echo "acr_login_server=${{ secrets.NONPROD_ACR_LOGIN_SERVER }}" >> "$GITHUB_OUTPUT"
-              echo "acr_username=${{ secrets.NONPROD_ACR_USERNAME }}" >> "$GITHUB_OUTPUT"
-              echo "acr_password=${{ secrets.NONPROD_ACR_PASSWORD }}" >> "$GITHUB_OUTPUT"
               ;;
             main)
               echo "environment=prod" >> "$GITHUB_OUTPUT"
               echo "acr_login_server=${{ secrets.PROD_ACR_LOGIN_SERVER }}" >> "$GITHUB_OUTPUT"
-              echo "acr_username=${{ secrets.PROD_ACR_USERNAME }}" >> "$GITHUB_OUTPUT"
-              echo "acr_password=${{ secrets.PROD_ACR_PASSWORD }}" >> "$GITHUB_OUTPUT"
               ;;
             *)
               echo "Unsupported branch: ${GITHUB_REF_NAME}"
               exit 1
               ;;
           esac
+
+      - name: Azure login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Login to ACR
+        run: |
+          set -euo pipefail
+          ACR_NAME="$(echo "${{ steps.acr.outputs.acr_login_server }}" | cut -d'.' -f1)"
+          az acr login --name "$ACR_NAME"
 
       - name: Prepare metadata
         id: meta
@@ -78,12 +93,6 @@ jobs:
           SHORT_SHA="${GITHUB_SHA::7}"
           ENVIRONMENT="${{ steps.acr.outputs.environment }}"
           echo "image_tag=${ENVIRONMENT}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
-
-      - name: Login to ACR
-        run: |
-          echo "${{ steps.acr.outputs.acr_password }}" | docker login "${{ steps.acr.outputs.acr_login_server }}" \
-            --username "${{ steps.acr.outputs.acr_username }}" \
-            --password-stdin
 
       - name: Build and push main image
         run: |
