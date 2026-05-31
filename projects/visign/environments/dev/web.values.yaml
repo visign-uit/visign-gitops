@@ -37,10 +37,22 @@ ingress:
       pathType: Prefix
       serviceName: visign-ai
       servicePort: 8000
+    - path: /api/predict-keypoints
+      pathType: Prefix
+      serviceName: visign-ai
+      servicePort: 8000
     - path: /api/videos
       pathType: Prefix
-      serviceName: visign-web
-      servicePort: 3000
+      serviceName: visign-ai
+      servicePort: 8000
+    - path: /api/topics
+      pathType: Prefix
+      serviceName: visign-ai
+      servicePort: 8000
+    - path: /api/labels
+      pathType: Prefix
+      serviceName: visign-ai
+      servicePort: 8000
     - path: /
       pathType: Prefix
       serviceName: visign-web
@@ -49,7 +61,7 @@ ingress:
 keyVault:
   enabled: true
   providerClassName: visign-kv-secrets
-  keyVaultName: visign-nonprod-kv-zse7xf
+  keyVaultName: visign-dev-kv-bhx5po
   tenantId: "c7aee1e3-c9fb-4247-865d-ca9c9dde9ad3"
   userAssignedIdentityID: "52445c31-7eb9-41b8-b7c8-b35fab2343fc"
   objects:
