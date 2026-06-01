@@ -1,15 +1,20 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: { { .Values.service.name } }
+  name: {{ .Values.service.name | quote }}
   labels:
-    app.kubernetes.io/name: { { .Values.service.name } }
-    app.kubernetes.io/part-of: { { .Values.project.name } }
+    app.kubernetes.io/name: {{ .Values.service.name | quote }}
+    app.kubernetes.io/part-of: {{ .Values.project.name | quote }}
+    app.kubernetes.io/component: {{ .Values.service.component | quote }}
+    app.kubernetes.io/managed-by: "Helm"
 spec:
   type: ClusterIP
   selector:
-    app.kubernetes.io/name: { { .Values.service.name } }
+    app.kubernetes.io/name: {{ .Values.service.name | quote }}
+    app.kubernetes.io/part-of: {{ .Values.project.name | quote }}
+    app.kubernetes.io/component: {{ .Values.service.component | quote }}
   ports:
     - name: http
-      port: { { .Values.service.port } }
-      targetPort: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.containerPort }}
+      protocol: TCP

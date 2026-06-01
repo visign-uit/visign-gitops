@@ -1,0 +1,9 @@
+{
+  "[yaml]": {
+    "editor.formatOnSave": false
+  },
+  "[yml]": {
+    "editor.formatOnSave": false
+  },
+  "editor.formatOnSave": false
+}
