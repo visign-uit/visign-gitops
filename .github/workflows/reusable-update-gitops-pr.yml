@@ -69,7 +69,7 @@ jobs:
           cd visign-gitops
 
           VALUES_FILE="${{ steps.target.outputs.values_file }}"
-          IMAGE_TAG="${{ inputs.image_tag }}"
+          export IMAGE_TAG="${{ inputs.image_tag }}"
           MIGRATION_ENABLED="${{ inputs.migration_enabled }}"
 
           yq e -i '.image.tag = strenv(IMAGE_TAG)' "$VALUES_FILE"
