@@ -1,31 +1,25 @@
 project:
   name: visign
   environment: dev
-
 service:
   name: visign-web
   component: web
   type: nextjs
   port: 3000
   containerPort: 3000
-
 image:
   repository: visigndevacrbhx5po.azurecr.io/visign-web
-  tag: dev-placeholder
+  tag: dev-70dfad0
   pullPolicy: IfNotPresent
-
 replicaCount: 1
-
 env:
   - name: NODE_ENV
     value: production
   - name: NEXT_PUBLIC_API_URL
     value: /api/predict
-
 probes:
   enabled: true
   path: /
-
 ingress:
   enabled: true
   className: nginx
@@ -57,7 +51,6 @@ ingress:
       pathType: Prefix
       serviceName: visign-web
       servicePort: 3000
-
 keyVault:
   enabled: true
   providerClassName: visign-kv-secrets
@@ -78,14 +71,12 @@ keyVault:
       key: CLERK_SECRET_KEY
     - objectName: CLERK-PUBLISHABLE-KEY
       key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-
 migration:
   enabled: true
   image:
     repository: visigndevacrbhx5po.azurecr.io/visign-web-migrator
-    tag: dev-placeholder
+    tag: dev-70dfad0
   command: ["npm"]
   args: ["run", "db:migrate"]
-
 topologySpread:
   enabled: false
