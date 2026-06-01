@@ -102,6 +102,21 @@ resource acrPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
+// AKS cluster identity → Network Contributor
+// Required for Azure LoadBalancer / ingress-nginx external IP / subnet operations
+resource aksNetworkContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, aksName, 'Network Contributor')
+  scope: resourceGroup()
+  properties: {
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      '4d97b98b-1d4f-4787-a291-c67834d212e7' // Network Contributor
+    )
+    principalId: aks.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
 // ── Outputs ──────────────────────────────────────────────────
 
 output aksId string = aks.id
@@ -109,3 +124,4 @@ output aksName string = aks.name
 output kubeletPrincipalId string = aks.properties.identityProfile.kubeletidentity.objectId
 output csiPrincipalId string = aks.properties.addonProfiles.azureKeyvaultSecretsProvider.identity.objectId
 output oidcIssuerUrl string = aks.properties.oidcIssuerProfile.issuerURL
+output aksNetworkContributorId string = aksNetworkContributor.id
