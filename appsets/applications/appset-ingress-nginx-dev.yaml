@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: appset-ingress-nginx-dev
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: ingress-nginx-dev
+            env: dev
+            clusterName: aks-visign-dev
+            namespace: ingress-nginx
+
+  template:
+    metadata:
+      name: "{{name}}"
+      labels:
+        env: "{{env}}"
+
+    spec:
+      project: platform
+
+      source:
+        repoURL: https://kubernetes.github.io/ingress-nginx
+        chart: ingress-nginx
+        targetRevision: 4.15.1
+        helm:
+          releaseName: ingress-nginx
+          values: |
+            controller:
+              service:
+                annotations:
+                  service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+
+      destination:
+        name: "{{clusterName}}"
+        namespace: "{{namespace}}"
+
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+        automated:
+          prune: true
+          selfHeal: true
