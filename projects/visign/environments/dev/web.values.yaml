@@ -9,7 +9,7 @@ service:
   containerPort: 3000
 image:
   repository: visigndevacrbhx5po.azurecr.io/visign-web
-  tag: dev-6b2a145
+  tag: dev-59d7946
   pullPolicy: IfNotPresent
 replicaCount: 1
 env:
@@ -75,7 +75,7 @@ migration:
   enabled: true
   image:
     repository: visigndevacrbhx5po.azurecr.io/visign-web-migrator
-    tag: dev-6b2a145
+    tag: dev-59d7946
   command: ["npm"]
   args: ["run", "db:migrate"]
 topologySpread:
