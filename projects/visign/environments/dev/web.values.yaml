@@ -77,6 +77,6 @@ migration:
     repository: visigndevacrbhx5po.azurecr.io/visign-web-migrator
     tag: dev-6b2a145
   command: ["npm"]
-  args: ["run", "db:migrate"]
+  args: ["run", "db:bootstrap"]
 topologySpread:
   enabled: false
