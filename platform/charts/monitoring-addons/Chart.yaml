@@ -1,0 +1,5 @@
+apiVersion: v2
+name: monitoring-addons
+description: ServiceMonitor and recording rules for Visign monitoring
+type: application
+version: 0.1.0

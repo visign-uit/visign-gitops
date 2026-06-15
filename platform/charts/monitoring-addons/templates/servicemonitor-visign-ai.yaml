@@ -1,0 +1,22 @@
+{{- if .Values.serviceMonitors.ai.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: visign-ai
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: visign-ai
+    app.kubernetes.io/part-of: {{ .Values.project.name | quote }}
+    app.kubernetes.io/environment: {{ .Values.project.environment | quote }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.serviceMonitors.ai.namespace | quote }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.serviceMonitors.ai.matchLabelName | quote }}
+  endpoints:
+    - port: {{ .Values.serviceMonitors.ai.port | quote }}
+      path: {{ .Values.serviceMonitors.ai.path | quote }}
+      interval: {{ .Values.serviceMonitors.ai.interval | quote }}
+{{- end }}

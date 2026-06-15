@@ -1,0 +1,15 @@
+project:
+  name: visign
+  environment: prod
+
+serviceMonitors:
+  ai:
+    enabled: true
+    namespace: visign
+    matchLabelName: visign-ai
+    port: http
+    path: /metrics
+    interval: 30s
+
+prometheusRules:
+  enabled: true

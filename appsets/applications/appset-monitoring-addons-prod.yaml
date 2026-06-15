@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: appset-monitoring-addons-prod
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: monitoring-addons-prod
+            env: prod
+            clusterName: aks-visign-prod
+            namespace: monitoring
+            chartPath: platform/charts/monitoring-addons
+
+  template:
+    metadata:
+      name: "{{name}}"
+      labels:
+        env: "{{env}}"
+
+    spec:
+      project: platform
+
+      sources:
+        - repoURL: https://github.com/visign-uit/visign-gitops
+          targetRevision: main
+          path: "{{chartPath}}"
+          helm:
+            releaseName: "{{name}}"
+            valueFiles:
+              - $values/platform/helm-values/monitoring-addons/prod.values.yaml
+
+        - repoURL: https://github.com/visign-uit/visign-gitops
+          targetRevision: main
+          ref: values
+
+      destination:
+        name: "{{clusterName}}"
+        namespace: "{{namespace}}"
+
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

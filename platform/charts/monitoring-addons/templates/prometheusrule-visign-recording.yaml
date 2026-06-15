@@ -1,0 +1,66 @@
+{{- if .Values.prometheusRules.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: visign-recording-rules
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: visign-recording-rules
+    app.kubernetes.io/part-of: {{ .Values.project.name | quote }}
+    app.kubernetes.io/environment: {{ .Values.project.environment | quote }}
+spec:
+  groups:
+    - name: visign.recording.rules
+      rules:
+        - record: visign:web:cpu_usage
+          expr: |
+            sum by (pod) (
+              rate(container_cpu_usage_seconds_total{
+                namespace="visign",
+                pod=~"visign-web.*",
+                container!="",
+                image!=""
+              }[2m])
+            )
+
+        - record: visign:web:memory_usage
+          expr: |
+            sum by (pod) (
+              container_memory_working_set_bytes{
+                namespace="visign",
+                pod=~"visign-web.*",
+                container!="",
+                image!=""
+              }
+            )
+
+        - record: visign:ai:cpu_usage
+          expr: |
+            sum by (pod) (
+              rate(container_cpu_usage_seconds_total{
+                namespace="visign",
+                pod=~"visign-ai.*",
+                container!="",
+                image!=""
+              }[2m])
+            )
+
+        - record: visign:ai:memory_usage
+          expr: |
+            sum by (pod) (
+              container_memory_working_set_bytes{
+                namespace="visign",
+                pod=~"visign-ai.*",
+                container!="",
+                image!=""
+              }
+            )
+
+        - record: visign:ingress:request_rate
+          expr: |
+            sum(
+              rate(nginx_ingress_controller_requests{
+                exported_namespace="visign"
+              }[2m])
+            )
+{{- end }}
