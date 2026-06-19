@@ -29,7 +29,7 @@ spec:
           helm:
             releaseName: "{{name}}"
             valueFiles:
-              - $values/platform/helm-values/monitoring-addons/prod.values.yaml
+              - $values/projects/visign/environments/prod/monitoring-addons.values.yaml
 
         - repoURL: https://github.com/visign-uit/visign-gitops
           targetRevision: main
