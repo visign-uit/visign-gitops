@@ -28,6 +28,7 @@ spec:
       namespace: monitoring
     - name: aks-visign-prod
       namespace: monitoring
+      
 
   clusterResourceWhitelist:
     - group: "*"
