@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "15780430329570480827"
+      "templateHash": "1000834670430437310"
     }
   },
   "parameters": {
@@ -21,7 +21,7 @@
     },
     "location": {
       "type": "string",
-      "defaultValue": "southeastasia",
+      "defaultValue": "eastasia",
       "metadata": {
         "description": "Azure region"
       }
@@ -393,7 +393,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.43.8.12551",
-              "templateHash": "190777238216228308"
+              "templateHash": "16255172460874056832"
             }
           },
           "parameters": {
@@ -508,6 +508,19 @@
               "dependsOn": [
                 "[resourceId('Microsoft.ContainerService/managedClusters', parameters('aksName'))]"
               ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(resourceGroup().id, parameters('aksName'), 'Network Contributor')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4d97b98b-1d4f-4787-a291-c67834d212e7')]",
+                "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('aksName')), '2024-01-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ContainerService/managedClusters', parameters('aksName'))]"
+              ]
             }
           ],
           "outputs": {
@@ -530,6 +543,10 @@
             "oidcIssuerUrl": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('aksName')), '2024-01-01').oidcIssuerProfile.issuerURL]"
+            },
+            "aksNetworkContributorId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Authorization/roleAssignments', guid(resourceGroup().id, parameters('aksName'), 'Network Contributor'))]"
             }
           }
         }

@@ -56,7 +56,7 @@ keyVault:
   providerClassName: visign-kv-secrets
   keyVaultName: visign-dev-kv-bhx5po
   tenantId: "c7aee1e3-c9fb-4247-865d-ca9c9dde9ad3"
-  userAssignedIdentityID: "52445c31-7eb9-41b8-b7c8-b35fab2343fc"
+  userAssignedIdentityID: "39c0fa93-bdb4-4f9a-af40-53b097c4c5ee"
   objects:
     - objectName: DATABASE-URL
       objectType: secret
@@ -72,7 +72,7 @@ keyVault:
     - objectName: CLERK-PUBLISHABLE-KEY
       key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 migration:
-  enabled: false
+  enabled: true
   image:
     repository: visigndevacrbhx5po.azurecr.io/visign-web-migrator
     tag: dev-badd1b0
