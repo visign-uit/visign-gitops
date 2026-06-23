@@ -72,7 +72,7 @@ keyVault:
     - objectName: CLERK-PUBLISHABLE-KEY
       key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 migration:
-  enabled: true
+  enabled: false
   image:
     repository: visigndevacrbhx5po.azurecr.io/visign-web-migrator
     tag: dev-e38e63f
