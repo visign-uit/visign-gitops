@@ -9,7 +9,7 @@ service:
   containerPort: 8000
 image:
   repository: visigndevacrbhx5po.azurecr.io/visign-ai
-  tag: dev-badd1b0
+  tag: dev-7921538
   pullPolicy: IfNotPresent
 replicaCount: 1
 probes:
