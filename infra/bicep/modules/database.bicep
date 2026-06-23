@@ -1,7 +1,7 @@
 // ============================================================
 // POSTGRESQL FLEXIBLE SERVER MODULE
 // Private access via VNet delegation — no public endpoint
-// Optional Zone-Redundant HA for prod
+// Optional HA for prod: SameZone or ZoneRedundant
 // ============================================================
 
 param location string
@@ -14,6 +14,15 @@ param adminLogin string
 param adminPassword string
 
 param enableHighAvailability bool = false
+
+@description('PostgreSQL high availability mode')
+@allowed([
+  'Disabled'
+  'SameZone'
+  'ZoneRedundant'
+])
+param highAvailabilityMode string = 'SameZone'
+
 param postgresVersion string = '16'
 
 // ── Private DNS Zone ─────────────────────────────────────────
@@ -39,6 +48,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2023-06-01-preview'
   name: serverName
   location: location
   sku: {
+    // HA is not supported on Burstable tier, so prod HA uses GeneralPurpose
     name: enableHighAvailability ? 'Standard_D2s_v3' : 'Standard_B2ms'
     tier: enableHighAvailability ? 'GeneralPurpose' : 'Burstable'
   }
@@ -53,12 +63,11 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2023-06-01-preview'
       privateDnsZoneArmResourceId: privateDns.id
     }
 
+    // In eastasia, ZoneRedundant may not be supported for the selected SKU/subscription.
+    // Use SameZone for prod HA while keeping deployment in eastasia.
     highAvailability: {
-      mode: enableHighAvailability ? 'ZoneRedundant' : 'Disabled'
-      standbyAvailabilityZone: enableHighAvailability ? '3' : ''
+      mode: enableHighAvailability ? highAvailabilityMode : 'Disabled'
     }
-
-    availabilityZone: '' // Primary server in AZ-1; standby (if enabled) in AZ-3
 
     storage: {
       storageSizeGB: 32

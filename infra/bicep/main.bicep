@@ -52,8 +52,8 @@ param aksAutoScaleMin int
 @description('AKS autoscale max')
 param aksAutoScaleMax int
 
-@description('Availability zones for AKS nodes')
-param aksAvailabilityZones array = ['2', '3']
+@description('Availability zones for AKS nodes. Keep [] for regions/SKUs that do not support zones.')
+param aksAvailabilityZones array = []
 
 @description('ACR SKU')
 @allowed(['Basic', 'Standard', 'Premium'])
@@ -66,15 +66,22 @@ param postgresAdminLogin string = 'visignadmin'
 @description('PostgreSQL admin password — pass via CLI, never hardcode')
 param postgresAdminPassword string
 
-@description('Enable PostgreSQL Zone-Redundant HA')
+@description('Enable PostgreSQL High Availability')
 param postgresHighAvailability bool
+
+@description('PostgreSQL HA mode. Use SameZone when ZoneRedundant is not supported in the selected region/SKU.')
+@allowed([
+  'Disabled'
+  'SameZone'
+  'ZoneRedundant'
+])
+param postgresHighAvailabilityMode string = 'SameZone'
 
 @description('Key Vault soft-delete retention in days')
 param kvSoftDeleteDays int
 
 // ── Variables ────────────────────────────────────────────────
 
-var isProd = clusterType == 'prod'
 var suffix = '-${clusterType}' // e.g. -nonprod | -prod
 
 // Resource group name: visign-nonprod-rg | visign-prod-rg
@@ -142,6 +149,7 @@ module database './modules/database.bicep' = {
     dbSubnetId: network.outputs.dbSubnetId
     vnetId: network.outputs.vnetId
     enableHighAvailability: postgresHighAvailability
+    highAvailabilityMode: postgresHighAvailabilityMode
   }
 }
 
