@@ -10,7 +10,7 @@ service:
   containerPort: 3000
 
 image:
-  repository: visignprodacrvnktt4.azurecr.io/visign-web
+  repository: visignprodacrqjczbu.azurecr.io/visign-web
   tag: prod-placeholder
   pullPolicy: IfNotPresent
 
@@ -49,9 +49,9 @@ ingress:
 keyVault:
   enabled: true
   providerClassName: visign-kv-secrets
-  keyVaultName: visign-prod-kv-vnktt4
-  tenantId: "<tenant-id-thật>"
-  userAssignedIdentityID: "<managed-identity-client-id-prod>"
+  keyVaultName: visign-prod-kv-qjczbu
+  tenantId: "c7aee1e3-c9fb-4247-865d-ca9c9dde9ad3"
+  userAssignedIdentityID: "89725ba5-c147-4201-a857-5af72e749577"
   objects:
     - objectName: DATABASE_URL
       objectType: secret
@@ -70,7 +70,7 @@ keyVault:
 migration:
   enabled: true
   image:
-    repository: visignprodacrvnktt4.azurecr.io/visign-web-migrator
+    repository: visignprodacrqjczbu.azurecr.io/visign-web-migrator
     tag: prod-placeholder
   command: ["npm"]
   args: ["run", "db:migrate"]
